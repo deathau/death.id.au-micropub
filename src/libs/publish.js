@@ -83,7 +83,8 @@ const publish = {
 		const parsed = isJSON ? parse.fromJSON(data) : parse.fromForm(data)
 		console.log('└─>', parsed)
 		if (parsed && parsed['like-of']) {
-			parsed.name = parsed.name || await parse.getPageTitle(parsed['like-of'])
+			let name = parsed.name || await parse.getPageTitle(parsed['like-of'])
+			if(name) parsed.name = name
 		}
 		if (parsed && parsed.photo) {
 			const uploaded = await uploadFiles(parsed.photo)
