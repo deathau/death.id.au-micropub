@@ -27,10 +27,12 @@ const content = {
 			output['client_id'] = clientId
 		}
 
-		return matter.stringify(data.content || '', output)
+		const body = data.content ? data.content.html || data.content : '';
+
+		return matter.stringify(body || '', output)
 	},
 
-	format: (data, clientId) => {
+	format: (data, clientId, dir, ext) => {
 		if (!data) {
 			return null
 		}
@@ -49,12 +51,15 @@ const content = {
 			slugParts.push(utils.slugify(data.slug))
 		} else if (data.name) {
 			slugParts.push(utils.slugify(data.name))
+		} else if (data["wm-id"]) {
+			slugParts.push(`wm-${data["wm-id"]}`)
 		} else {
 			slugParts.push(Math.round(date / 1000))
 		}
 		const slug = slugParts.join('-')
-		const dir = (process.env.CONTENT_DIR || 'src').replace(/\/$/, '')
-		const filename = `${dir}/${type}/${slug}.md`
+		if(!dir) dir = (process.env.CONTENT_DIR || 'src').replace(/\/$/, '')
+		if(!ext) ext = 'md'
+		const filename = `${dir}/${type}/${slug}.${ext}`
 
 		return {
 			'filename': filename,
@@ -82,6 +87,9 @@ const content = {
 		}
 		if (data['u-watch-of']) {
 			return 'watched'
+		}
+		if (data['follow-of']) {
+			return 'follows'
 		}
 		return 'notes'
 	},
